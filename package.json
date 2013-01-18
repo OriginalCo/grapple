@@ -6,6 +6,16 @@
     "name": "Francis Lukesh",
     "email": "fran@lukesh.com"
   },
+  "contributors": [
+    {
+      "name": "Francis Lukesh",
+      "email": "fran@lukesh.com"
+    },
+    {
+      "name": "Thor Muller",
+      "email": "thor@thormuller.com"
+    }
+  ],
   "scripts": {
     "test": "make test"
   },
