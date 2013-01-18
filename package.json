@@ -4,16 +4,16 @@
   "description": "Abstracts the creation of Mongoose schemas, encapsulating the creation of inline dynamic schemas, the definition of 'in' and 'out' transformation methods that handle complex nested document references.",
   "author": {
     "name": "Francis Lukesh",
-    "email": "fran@origin.al"
+    "email": "fran@lukesh.com"
   },
   "contributors": [
     {
       "name": "Francis Lukesh",
-      "email": "fran@origin.al"
+      "email": "fran@lukesh.com"
     },
     {
       "name": "Thor Muller",
-      "email": "thor@origin.al"
+      "email": "thor@thormuller.com"
     }
   ],
   "scripts": {
