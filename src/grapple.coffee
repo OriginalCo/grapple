@@ -4,6 +4,7 @@ mongoose = null
 
 Schema = (obj) ->
   @schema = new mongoose.Schema(obj)
+  @preferences = {}
   @references = []
   return
 
@@ -31,6 +32,22 @@ Schema::plugin = (plugin) ->
 Schema::method = (name, func) ->
   @schema.method name, func
   this
+
+# ### setPreference(key, val)
+Schema::setPreference = (key, val) ->
+  if typeof key is "object"
+    _.extend @preferences, key
+  else
+    @preferences[key] = val
+  this
+
+# ### getPreference(key, val)
+Schema::getPreference = (key) ->
+  @preferences[key]
+
+Schema::sanitizeReferencesManually = ->
+  #@setPreference {"manualReferenceSanitization": true}
+  @setPreference "manualReferenceSanitization", true
 
 # ### compile(name)
 # This should be called last in the method chain, and assembles the Mongoose
@@ -68,7 +85,7 @@ Schema::compile = (name) ->
       
       # If the model doesn't have any embedded documents, just respond with the
       # sanitized model.
-      if self.references.length is 0
+      if self.getPreference "manualReferenceSanitization" or self.references.length is 0
         callback response
         return
       
