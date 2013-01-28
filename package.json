@@ -1,6 +1,6 @@
 {
   "name": "grapple",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Abstracts the creation of Mongoose schemas, encapsulating the creation of inline dynamic schemas, the definition of 'in' and 'out' transformation methods that handle complex nested document references.",
   "author": {
     "name": "Francis Lukesh",

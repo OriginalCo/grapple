@@ -105,7 +105,7 @@ Schema::compile = (name) ->
                     response[ref.field][i] = obj.toObject()
                     next()
                 else
-                  console.log "Error retrieving lightweight object because the object does not exist:", item
+                  console.log "Error retrieving lightweight object because the object does not exist, field '" + ref.field + "', id '" + item + "'"
                   next()
 
             ).on("error", (err, errors) ->
