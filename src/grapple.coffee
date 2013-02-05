@@ -59,20 +59,52 @@ Schema::compile = (name) ->
   # Accepts an object and attempts to merge with the model, saves it, then
   # passes the Mongoose model to the callback.
   @method "in", (object, callback) ->
+    model = this
     object_id = object._id
     delete object._id
 
-    _.each self.references, (ref, i) ->
-      if ref.relation is "many"
-        _.each object[ref.field], (val, i) ->
-          if val
-            object[ref.field][i] = val._id or val
-          else
-            console.log "Error processing \"" + ref.field + "\" collection: a null value exists in the array."
+    each(self.references).on("item", (ref, i, next) ->
 
-    _.extend this, object
-    @save()
-    callback this
+      if ref.relation is "many"
+        if object[ref.field].length > 0
+
+          _.each object[ref.field], (val, i) ->
+            if val?
+              if val.toString() is "[object Object]"
+                if not val._id?
+                  SubSchema = mongoose.model(ref.schema)
+                  subModel = new SubSchema(val)
+                  object[ref.field][i] = subModel
+                  subModel.save (err) ->
+                    if err then console.log "Error dynamically saving reference \"" + ref.field "\":", err
+                else
+                  object[ref.field][i] = val._id
+              else
+                object[ref.field][i] = val
+            else
+              console.log "Error processing \"" + ref.field + "\" collection: a null value exists in the array."
+              
+      else if ref.relation is "one"
+        if object[ref.field]?
+          if object[ref.field].toString() is "[object Object]"
+            if not object[ref.field]._id?
+              SubSchema = mongoose.model(ref.schema)
+              subModel = new SubSchema(object[ref.field])
+              object[ref.field] = subModel
+              subModel.save (err) ->
+                if err then console.log "Error dynamically saving reference \"" + ref.field "\":", err
+          else
+            object[ref.field] = {_id: object[ref.field]}
+
+      next()
+    ).on("error", (err) ->
+      console.log "Error processing references:", err
+
+    ).on "end", ->
+      _.extend model, object
+      model.save (err) ->
+        if err then console.log "There was an error saving model on \"in\":", err
+        callback model
 
   # Passes a sanitized object to the callback from the Mongoose model.
   @method "out", (callback) ->

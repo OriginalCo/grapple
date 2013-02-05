@@ -168,6 +168,158 @@ describe('grapple', function() {
     })
   })
 
+  it('should run the "in" method on the model and save unsaved "one"-reference referenced documents', function(done) {
+    var NestedSchemaHasOne = getSchema('NestedSchemaHasOne')
+      , SimpleSchema = getSchema('SimpleSchema')
+      , nestedModel = new NestedSchemaHasOne({
+          "name": "nested schema"
+      })
+      , model = {
+        "name": "simple schema"   
+      }
+
+    nestedModel.save(function(err, obj) {
+      obj.out(function(obj_out) {
+        obj_out.simpleSchema = model
+        obj.in(obj_out, function(obj) {
+          obj.out(function(obj_out) {
+            obj_out.should.have.property('_id')
+            obj_out.should.have.property('name', 'nested schema')
+            obj_out.simpleSchema.should.have.property('_id')
+            obj_out.simpleSchema.should.have.property('name', 'simple schema')
+            obj_out.simpleSchema = model
+            obj.in(obj_out, function(obj) {
+              obj.out(function(obj_out) {
+                obj_out.should.have.property('_id')
+                obj_out.should.have.property('name', 'nested schema')
+                obj_out.simpleSchema.should.have.property('_id')
+                obj_out.simpleSchema.should.have.property('name', 'simple schema')
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+  
+  it('should run the "in" method on the model and save unsaved "one"-reference referenced documents using string ins', function(done) {
+    var NestedSchemaHasOne = getSchema('NestedSchemaHasOne')
+      , SimpleSchema = getSchema('SimpleSchema')
+      , nestedModel = new NestedSchemaHasOne({
+          "name": "nested schema string"
+      })
+      , model = {
+        "name": "simple schema string"
+      }
+
+    nestedModel.save(function(err, obj) {
+      obj.out(function(obj_out) {
+        obj_out.simpleSchema = model
+        obj.in(obj_out, function(obj) {
+          obj.out(function(obj_out) {
+            obj_out.should.have.property('_id')
+            obj_out.should.have.property('name', 'nested schema string')
+            obj_out.simpleSchema.should.have.property('_id')
+            obj_out.simpleSchema.should.have.property('name', 'simple schema string')
+            obj_out.simpleSchema = obj_out.simpleSchema._id
+
+            obj.in(obj_out, function(obj) {
+              obj.out(function(obj_out) {
+                obj_out.should.have.property('_id')
+                obj_out.should.have.property('name', 'nested schema string')
+                obj_out.simpleSchema.should.have.property('_id')
+                obj_out.simpleSchema.should.have.property('name', 'simple schema string')
+                return done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
+  it('should run the "in" method on the model and save unsaved "many"-reference referenced documents', function(done) {
+    var NestedSchemaHasMany = getSchema('NestedSchemaHasMany')
+      , SimpleSchema = getSchema('SimpleSchema')
+      , nestedModel = new NestedSchemaHasMany({
+          "name": "nested schema"
+      })
+      , model = {
+        "name": "simple schema"   
+      }
+
+    nestedModel.save(function(err, obj) {
+      obj.out(function(obj_out) {
+        obj_out.simpleSchemas = [model, model]
+        obj.in(obj_out, function(obj) {
+          obj.out(function(obj_out) {
+            obj_out.should.have.property('_id')
+            obj_out.should.have.property('name', 'nested schema')
+            obj_out.simpleSchemas[0].should.have.property('_id')
+            obj_out.simpleSchemas[0].should.have.property('name', 'simple schema')
+            obj_out.simpleSchemas[1].should.have.property('_id')
+            obj_out.simpleSchemas[1].should.have.property('name', 'simple schema')
+
+            obj.in(obj_out, function(obj) {
+              obj.out(function(obj_out) {
+                obj_out.should.have.property('_id')
+                obj_out.should.have.property('name', 'nested schema')
+                obj_out.simpleSchemas[0].should.have.property('_id')
+                obj_out.simpleSchemas[0].should.have.property('name', 'simple schema')
+                obj_out.simpleSchemas[1].should.have.property('_id')
+                obj_out.simpleSchemas[1].should.have.property('name', 'simple schema')
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
+  it('should run the "in" method on the model and save unsaved "many"-reference referenced documents using string ins', function(done) {
+    var NestedSchemaHasMany = getSchema('NestedSchemaHasMany')
+      , SimpleSchema = getSchema('SimpleSchema')
+      , nestedModel = new NestedSchemaHasMany({
+          "name": "nested schema"
+      })
+      , model = {
+        "name": "simple schema"   
+      }
+
+    nestedModel.save(function(err, obj) {
+      obj.out(function(obj_out) {
+        obj_out.simpleSchemas = [model, model]
+        obj.in(obj_out, function(obj) {
+          obj.out(function(obj_out) {
+            obj_out.should.have.property('_id')
+            obj_out.should.have.property('name', 'nested schema')
+            obj_out.simpleSchemas[0].should.have.property('_id')
+            obj_out.simpleSchemas[0].should.have.property('name', 'simple schema')
+            obj_out.simpleSchemas[1].should.have.property('_id')
+            obj_out.simpleSchemas[1].should.have.property('name', 'simple schema')
+
+            obj_out.simpleSchemas[0] = obj_out.simpleSchemas[0]._id
+            obj_out.simpleSchemas[1] = obj_out.simpleSchemas[1]._id
+
+            obj.in(obj_out, function(obj) {
+              obj.out(function(obj_out) {
+                obj_out.should.have.property('_id')
+                obj_out.should.have.property('name', 'nested schema')
+                obj_out.simpleSchemas[0].should.have.property('_id')
+                obj_out.simpleSchemas[0].should.have.property('name', 'simple schema')
+                obj_out.simpleSchemas[1].should.have.property('_id')
+                obj_out.simpleSchemas[1].should.have.property('name', 'simple schema')
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
   describe('lightweight method', function() {
 
     var Schema, model
@@ -315,4 +467,6 @@ describe('grapple', function() {
       emptySchema('SimpleDynamicSchemaWithLightweightForSanitization')
     })
   })
+
+
 })
