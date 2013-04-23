@@ -147,15 +147,18 @@ Schema::compile = (name) ->
 
           else
             mongoose.model(if typeof ref.schema is "string" then ref.schema else ref.relationName).findOne(_id: response[ref.field]._id or response[ref.field]).exec (err, obj) ->
-              if obj.lightweight
-                obj.lightweight (obj) ->
-                  response[ref.field] = obj
+              if obj
+                if obj.lightweight
+                  obj.lightweight (obj) ->
+                    response[ref.field] = obj
+                    next()
+
+                else
+                  response[ref.field] = obj.toObject()
                   next()
-
               else
-                response[ref.field] = obj.toObject()
+                console.log "Error retrieving lightweight object because the object does not exist, field '" + ref.field + "', id '" + (response[ref.field]._id or response[ref.field]) + "'"
                 next()
-
         else
           next()
       ).on("error", (err, errors) ->
